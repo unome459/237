@@ -1,6 +1,8 @@
 <?php
 
-$list = file_get_contents("entries.txt");
+require ("base.php");
+
+$list = $FileRecordManager->read();
 $movies = explode("\n", trim($list));
 $table_body = '';
 
