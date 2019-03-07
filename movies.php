@@ -5,14 +5,9 @@ require("base.php");
 extract($_POST);
 
 if (!empty($movie) && !empty($director)) {
-    $movie = ucwords(trim($movie));
-    $director = ucwords(trim($director));
-    $artist = ucwords(trim($artist));
-    $genre = (trim($genre));
-    $rating = ucwords(trim($rating));
-    $content = "$movie,$director,$artist,$genre,$rating\n";
+    $record = new Record($movie, $director, $artist, $genre, $rating);
 
-    if (!writeToFile("entries.txt", $content)) {
+    if (!$FileRecordManager->create($record)) {
         $message = sprintf("$alert", 'danger', "File could not be written to.");
     } else {
         $message = sprintf("$alert", 'success', "$movie was saved to log!");
