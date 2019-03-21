@@ -2,30 +2,22 @@
 
 require ("base.php");
 
-$list = $FileRecordManager->read();
-$movies = explode("\n", trim($list));
-$table_body = '';
+$dataSourceStatus = $dataSource->getStatus();
+$buttons = $dataSource->buttons();
 
-foreach ($movies as $entry) {
-    $movie = explode(',', trim($entry));
-    $table_body .= '<tr>';
-    $table_body .= '<td>' . $movie[0] . '</td>';
-    $table_body .= '<td>' . $movie[1] . '</td>';
-    $table_body .= '<td>' . $movie[2] . '</td>';
-    $table_body .= '<td>' . $movie[3] . '</td>';
-    $table_body .= '<td>' . $movie[4] . '</td>';
-    $table_body .= '</tr>';
+try {
+    $data = @$dataSource->getMovieManager()->read();
+    $table_body = $dataSource->list1($data);
+} catch (FileOpenException $e) {
+    $table_body = $e;
+} catch (Exception $e) {
+    $table_body = $e->getMessage();
 }
-
-?>
-
-<!DOCTYPE html>
-<html lang="en">
-<?php require("head.php") ?>
-<body>
-<?php require("navbar.php") ?>
+$body = <<<EOT
 <div class="container">
     <div class="row">
+    <p class="bg-info">$dataSourceStatus</p>
+    $buttons
         <table class="table">
             <thead>
             <tr>
@@ -34,13 +26,18 @@ foreach ($movies as $entry) {
                 <th>Artist</th>
                 <th>Genre</th>
                 <th>Rating (Out of 5)</th>
+                <th colspan="2">Actions</th>
             </tr>
             </thead>
             <tbody>
-                <?php echo $table_body; ?>
+                $table_body
             </tbody>
         </table>
     </div>
 </div>
-</body>
-</html>
+EOT;
+$htmlPage->setBody($body);
+$htmlPage->printPage();
+
+?>
+

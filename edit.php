@@ -2,40 +2,50 @@
 
 require("base.php");
 
-$dataSourceStatus = $dataSource->getStatus();
-$buttons = $dataSource->buttons();
-$source = $dataSource->getSource();
+$id = null;
+
+if (isset($_GET) && isset($_GET['id'])) {
+    $id = $_GET['id'];
+    $record = $dataSource->getMovieManager()->readOneById($id);
+}
+
+if (isset($_POST) && !empty($_POST)) {
+    extract($_POST);
+    $record = new Record($movie, $director, $artist, $genre, $rating);
+    if ($dataSource->getMovieManager()->update($id, $record)) {
+        header('Location: movieslist.php');
+    }
+}
 
 $body = <<<EOT
 <div class="container">
     <div class="row">
-    <p class="bg-info">$dataSourceStatus</p>
-    $buttons
         <div class="input">
-            <form action="movies.php" method="POST" class="form-horizontal">
-            <input type="hidden" name="source" value=$source>
+            <h1 class="text-center">Edit Movie</h1>
+            
+            <form action="" method="POST" class="form-horizontal">
                 <div class="form-group required">
                     <label class="col-md-2 control-label">Movie name</label>
                     <div class="col-md-10">
-                        <input class="form-control" type="text" name="movie" required="">
+                        <input class="form-control" type="text" name="movie" value="$record->movie" required="">
                     </div>
                 </div>
                 <div class="form-group required">
                     <label class="col-md-2 control-label">Director's name</label>
                     <div class="col-md-10">
-                        <input class="form-control" type="text" name="director" required="">
+                        <input class="form-control" type="text" name="director" value="$record->director" required="">
                     </div>
                 </div>
                 <div class="form-group">
                     <label class="col-md-2 control-label">Artist</label>
                     <div class="col-md-10">
-                        <input class="form-control" type="text" name="artist">
+                        <input class="form-control" type="text" name="artist" value="$record->artist">
                     </div>
                 </div>
                 <div class="form-group">
                     <label class="col-md-2 control-label">Genres</label>
                     <div class="col-md-10">
-                        <select class="form-control" name="genre">
+                        <select class="form-control" name="genre" value="$record->genre">
                             <option value="none"></option>
                             <option value="Thriller">Thriller</option>
                             <option value="Drama">Drama</option>

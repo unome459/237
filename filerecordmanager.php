@@ -14,27 +14,45 @@ class FileRecordManager implements RecordManagerInterface {
     function create(Record $record) {
         $fp = fopen($this->path, 'ab');
         if (!$fp) {
-            return false;
+            throw new FileOpenException();
         }
         $content = "$record->movie,$record->director,$record->artist,$record->genre,$record->rating\n";
         if (!fwrite($fp, $content)) {
-            return false;
+            throw new FileWriteException();
         }
         if (!fclose($fp)) {
-            return false;
+            throw new FileCloseException();
         }
         return true;
     }
     function read() {
-        return file_get_contents($this->path);
+        if (($list = file_get_contents($this->path)) == false) {
+            throw new FileOpenException();
+        }
+        return $list;
     }
-    function update() {
-
+    function readOneById($id) {
+        $list = $this->read();
+        $movies = explode("\n", trim($list));
+        $movie = explode(',', trim($movies[$id]));
+        return new Record($movie[0], $movie[1], $movie[2], $movie[3], $movie[4]);
+    }
+    function update($id, Record $record) {
+        $list = $this->read();
+        $movies = explode("\n", trim($list));
+        $movies[$id] = "$record->movie,$record->director,$record->artist,$record->genre,$record->rating";
+        $content = implode("\n", $movies);
+        $content .= "\n";
+        $fp = fopen($this->path, 'w');
+        fwrite($fp, $content);
+        fclose($fp);
+        return true;
     }
     function delete() {
 
     } //deletes all records
 
 }
+
 $path = "entries.txt";
-$FileRecordManager = new FileRecordManager($path);
+$fileRecordManager = new FileRecordManager($path);
