@@ -18,6 +18,7 @@ EOT;
     <div class="topnav">
         <a href="index.php">Add Movies</a>
         <a href="movieslist.php">Movies Watched</a>
+        <a href="comiccharacters.php">Comic Characters</a>
     </div>
 EOT;
 

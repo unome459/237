@@ -17,8 +17,8 @@ class Record {
     }
 
     function __get($attr_name) {
-        return $this->$attr_name;
-    }
+    return $this->$attr_name;
+}
 
     function __set($attr_name, $value) {
         $attr_name = ucwords($attr_name);
